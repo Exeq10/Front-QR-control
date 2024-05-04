@@ -14,7 +14,6 @@ import Login from "./Pages/Login";
 import Options from "./Pages/Options";
 
 import UserProvider from "./context/UserProvider.jsx";
-import Scanner from "./Components/Scanner.jsx";
 
 
 const router = createBrowserRouter(
@@ -22,7 +21,7 @@ const router = createBrowserRouter(
     <>
       <Route path="/" element={<Login />} />
       <Route path="/select" element={<Options />} />
-      <Route path="/scanner" element={<Scanner />} />
+
       <Route path="*" element={<ErrorElement />} />
 
       {/* Protected routes */}
