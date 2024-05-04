@@ -18,7 +18,7 @@ function Login() {
   const handleLogin = (e) => {
     e.preventDefault();
 
-   /*  if ([name, documento].includes("")) {
+   if ([name, documento].includes("")) {
       setError({
         status: true,
         msg: "Complete los campos",
@@ -38,10 +38,9 @@ function Login() {
       status: true,
       msg: "Datos incorrectos",
       text: "Verifique sus datos ",
-    }); */
+    }); 
 
-
-    navigate('/scanner')
+   
   };
   return (
     <div className="container  d-flex flex-column justify-content-center   align-items-center  gap-3  col-lg-2 col-sm-12 col-xl-3 col-md-3    w-100  m-auto   vh-100       ">
