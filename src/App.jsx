@@ -1,5 +1,4 @@
 
-import "bootstrap/dist/css/bootstrap.min.css";
 
 import {
   createRoutesFromElements,
@@ -12,6 +11,8 @@ import ProtectedRoutes from "./Components/ProtectedRoutes";
 import ErrorElement from "./Components/ErrorElement";
 import Login from "./Pages/Login";
 import Options from "./Pages/Options";
+import Camera from "./Pages/Camera.jsx";
+
 
 import UserProvider from "./context/UserProvider.jsx";
 
@@ -19,30 +20,27 @@ import UserProvider from "./context/UserProvider.jsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path="/" element={<Login />} />
-      <Route path="/select" element={<Options />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/camera" element={<Camera />} />
 
       <Route path="*" element={<ErrorElement />} />
+  
 
       {/* Protected routes */}
-      <Route
-        element={<ProtectedRoutes />}
-        errorElement={<ErrorElement />}></Route>
+      <Route element={<ProtectedRoutes />} errorElement={<ErrorElement />}>
+        <Route path="/" element={<Options />} />
+      </Route>
     </>,
   ),
 );
 
 function App() {
   return (
-    
-
-<UserProvider>
-
+    <UserProvider>
       <section className="d-flex flex-column justify-content-center align-items-center ">
         <RouterProvider router={router} />
       </section>
-</UserProvider>
-    
+    </UserProvider>
   );
 }
 
