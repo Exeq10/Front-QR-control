@@ -1,12 +1,13 @@
 import {useContext, useState} from "react";
-import {RxAvatar} from "react-icons/rx";
+
 import {Form, Button} from "react-bootstrap";
 import AlertDismissible from "../Components/AlertDismissible";
 import {userContext} from "../context/UserProvider";
 import {useNavigate} from "react-router-dom";
 
 function Login() {
-  const {name, setName, documento, setDocumento, error, setError,setAuth} = useContext(userContext);
+  const {name, setName, documento, setDocumento, error, setError, setAuth,setAvataruser} =
+    useContext(userContext);
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -64,10 +65,10 @@ function Login() {
           if (localStorage.getItem("key_secret")) {
             if (
               responseData.key_secret === localStorage.getItem("key_secret")
-              
             ) {
-
-              setAuth(true)
+              console.log(responseData);
+              setAvataruser(responseData.pic_url)
+              setAuth(true);
               navigate("/");
             } else {
               setError({
@@ -99,10 +100,13 @@ function Login() {
   };
 
   return (
-    <div className="container d-flex flex-column justify-content-center align-items-center gap-3 col-lg-2 col-sm-12 col-xl-3 col-md-3 w-100 m-auto vh-100">
-      <RxAvatar fontSize={"150px"} />
+    <div className=" bg-white  shadow-lg  p-2   container d-flex flex-column justify-content-center align-items-center  col-lg-2 col-sm-12 col-xl-3 col-md-3 w-100 m-auto vh-100">
+      <div className="container-sm col-sm-12 col-md-10 col-lg-6 col-xl-6 d-flex justify-content-center align-items-center m-auto">
+        <img src="./logo.webp" alt="logo" className="d-block col-6" />
+      </div>
+
       <div className="container col-lg-4 col-sm-12 col-xl-6">
-        <h1 className="mt-3 mb-3">Ingresar</h1>
+        <h1 className="fs-2  mb-3">Ingresar</h1>
         <Form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
           <Form.Group controlId="formBasicEmail">
             <Form.Label>Nombre</Form.Label>

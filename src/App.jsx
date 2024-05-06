@@ -1,5 +1,3 @@
-
-
 import {
   createRoutesFromElements,
   Route,
@@ -13,9 +11,8 @@ import Login from "./Pages/Login";
 import Options from "./Pages/Options";
 import Camera from "./Pages/Camera.jsx";
 
-
 import UserProvider from "./context/UserProvider.jsx";
-
+import UserProfile from "./Pages/UserProfile.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,11 +21,11 @@ const router = createBrowserRouter(
       <Route path="/camera" element={<Camera />} />
 
       <Route path="*" element={<ErrorElement />} />
-  
 
       {/* Protected routes */}
       <Route element={<ProtectedRoutes />} errorElement={<ErrorElement />}>
         <Route path="/" element={<Options />} />
+        <Route path="/profile" element={<UserProfile />} />
       </Route>
     </>,
   ),
@@ -37,7 +34,7 @@ const router = createBrowserRouter(
 function App() {
   return (
     <UserProvider>
-      <section className="d-flex flex-column justify-content-center align-items-center ">
+      <section className="d-flex flex-column justify-content-center align-items-center bg-light   ">
         <RouterProvider router={router} />
       </section>
     </UserProvider>
