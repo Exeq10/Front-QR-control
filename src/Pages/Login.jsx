@@ -1,12 +1,16 @@
-import {useContext, useState} from "react";
+import { useContext, useState, useEffect } from "react";
+import "../assets/styles/styles.css"
+import { Form, Button } from "react-bootstrap";
 
-import {Form, Button} from "react-bootstrap";
-import AlertDismissible from "../Components/AlertDismissible";
-import {userContext} from "../context/UserProvider";
-import {useNavigate} from "react-router-dom";
+import { userContext } from "../context/UserProvider";
+import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from 'react-hot-toast';
+
+const notifyError = (error) => toast.error(error);
+const notifySuccess = (error) => toast.success(error);
 
 function Login() {
-  const {name, setName, documento, setDocumento, error, setError, setAuth,setAvataruser} =
+  const { name, setName, documento, setDocumento, message, setMessage, setAuth, setAvataruser, setUser_id } =
     useContext(userContext);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -17,11 +21,12 @@ function Login() {
 
     // Verifica si los campos están vacíos
     if (!name || !documento) {
-      setError({
+      setMessage({
         status: true,
         msg: "Complete los campos",
         text: "Por favor complete los campos para poder ingresar en la aplicación",
       });
+     
       return;
     }
 
@@ -32,7 +37,6 @@ function Login() {
     };
 
     setIsLoading(true);
-    console.log(data);
 
     // Configuración de la petición
     const requestOptions = {
@@ -52,12 +56,11 @@ function Login() {
         const responseData = await response.json();
 
         if (responseData.message) {
-          setError({
+          setMessage({
             status: true,
             msg: "Verifique sus datos ",
             text: responseData.message,
           });
-
           return;
         }
 
@@ -66,12 +69,12 @@ function Login() {
             if (
               responseData.key_secret === localStorage.getItem("key_secret")
             ) {
-              console.log(responseData);
+              setUser_id(responseData._id)
               setAvataruser(responseData.pic_url)
               setAuth(true);
               navigate("/");
             } else {
-              setError({
+              setMessage({
                 status: true,
                 msg: "Usuario incorrecto",
                 text: "El usuario no es el propietario de este dispositivo",
@@ -80,27 +83,48 @@ function Login() {
           } else {
             localStorage.setItem("key_secret", responseData.key_secret);
 
-            setError({
+            setMessage({
               status: true,
               msg: "Usuario confirmado",
               text: "El usuario se confirmó correctamente",
             });
           }
-
-          /* valida la clave que registro el usuario en su dispositivo con la que intenta ingresar el usuario  */
         }
       } else {
         throw new Error("Error al iniciar sesión");
       }
     } catch (error) {
       console.error("Error:", error.message);
+      setMessage({
+        status: true,
+        msg: "Error",
+        text: "Ocurrió un error al iniciar sesión. Por favor, inténtalo de nuevo más tarde.",
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (message.status) {
+      if (message.msg === "Complete los campos") {
+        notifyError(message.text);
+      } else if (message.msg === "Verifique sus datos ") {
+        notifyError(message.text);
+      } else if (message.msg === "Usuario incorrecto") {
+        notifyError(message.text);
+      } else if (message.msg === "Usuario confirmado") {
+        notifySuccess(message.text);
+      } else if (message.msg === "Error") {
+        notifyError(message.text);
+      }
+    }
+  }, [message]);
+
   return (
     <div className=" bg-white  shadow-lg  p-2   container d-flex flex-column justify-content-center align-items-center  col-lg-2 col-sm-12 col-xl-3 col-md-3 w-100 m-auto vh-100">
+      <Toaster />
+      
       <div className="container-sm col-sm-12 col-md-10 col-lg-6 col-xl-6 d-flex justify-content-center align-items-center m-auto">
         <img src="./logo.webp" alt="logo" className="d-block col-6" />
       </div>
@@ -116,7 +140,7 @@ function Login() {
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
-                setError({status: false, msg: "", text: ""});
+                setMessage({ status: false, msg: "", text: "" });
               }}
             />
           </Form.Group>
@@ -128,21 +152,19 @@ function Login() {
               value={documento}
               onChange={(e) => {
                 setDocumento(e.target.value);
-                setError({status: false, msg: "", text: ""});
+                setMessage({ status: false, msg: "", text: "" });
               }}
             />
           </Form.Group>
           <Button
             variant="primary"
             type="submit"
-            className="mt-4 m-auto col-lg-6 col-sm-12 col-xl-6 col-md-6"
+            className={`${isLoading ? 'mt-4 m-auto col-lg-6 col-sm-12 col-xl-6 col-md-6 parpadeo' :"mt-4 m-auto col-lg-6 col-sm-12 col-xl-6 col-md-6"} `}
             disabled={isLoading}>
             {isLoading ? "Iniciando Sesión..." : "Iniciar Sesión"}
           </Button>
-          {error.status && (
-            <AlertDismissible error={error.msg} text={error.text} />
-          )}
         </Form>
+       
       </div>
     </div>
   );

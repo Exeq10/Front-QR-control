@@ -4,10 +4,12 @@ const userContext = createContext();
 
 // eslint-disable-next-line react/prop-types
 function UserProvider({children}) {
-  /* posibles errores  */
+  /* posibles messagees  */
 
-  const [error, setError] = useState({status: false, msg: "", text: ""});
+  const [message, setMessage] = useState({status: false, msg: "", text: ""});
 const [avatarUser,setAvataruser]= useState('')
+const [user_id,setUser_id]= useState('')
+
   const [name, setName] = useState("");
   const [documento, setDocumento] = useState("");
   const [qrData, setQrData] = useState(null);
@@ -26,8 +28,8 @@ const [avatarUser,setAvataruser]= useState('')
         setName,
         documento,
         setDocumento,
-        error,
-        setError,
+        message,
+        setMessage,
         setTipo,
         auth,
         setAuth,
@@ -35,7 +37,9 @@ const [avatarUser,setAvataruser]= useState('')
         setQrData,
         tipo,
         setAvataruser,
-        avatarUser
+        avatarUser,
+        setUser_id,
+        user_id
       }}>
       {children}
     </userContext.Provider>

@@ -1,17 +1,16 @@
 import { useRef, useState, useEffect } from "react";
 import jsQR from "jsqr";
 import { Button } from "react-bootstrap";
-
-import AlertDismissible from "../Components/AlertDismissible";
 import { useNavigate } from "react-router-dom";
-
 import { useContext } from "react";
 import { userContext } from "../context/UserProvider";
+import toast, { Toaster } from 'react-hot-toast';
 
 const Camera = () => {
-  const navigate = useNavigate();
+  const notifyError = (error) => toast.error(error);
 
-  const { setQrData, qrData, setError, error } = useContext(userContext);
+  const navigate = useNavigate();
+  const { setQrData, qrData, setMessage } = useContext(userContext);
 
   const videoRef = useRef(null);
   const [scanning, setScanning] = useState(false);
@@ -76,33 +75,25 @@ const Camera = () => {
       });
       videoRef.current.srcObject = stream;
       setScanning(true);
-      setError(false);
+      setMessage(false);
       setQrData(null);
       setShowCamera(true);
     } catch (error) {
-      setError({
-        status: true,
-        msg: "Error al acceder a la cámara",
-        text: "Por favor habilite su cámara",
-      });
+      notifyError("Error al acceder a la cámara. Por favor habilite su cámara.");
     }
   };
 
   useEffect(() => {
     if (qrData === localStorage.getItem("key_secret")) {
       navigate("/profile");
-    } else {
-      setError({
-        status: true,
-        msg: "Intente nuevamente ",
-        text: "El QR escaneado no coincide con el usuario",
-      });
+    } else if (qrData !== null) {
+      notifyError("El QR escaneado no coincide con el usuario. Intente nuevamente.");
     }
 
     setShowCamera(true);
 
     if (showCamera) {
-      setError(false);
+      setMessage(false);
     }
   }, [qrData]);
 
@@ -137,19 +128,14 @@ const Camera = () => {
           }
         })
         .catch((error) => {
-          console.error("Error al enumerar dispositivos:", error);
+          notifyError("Error al enumerar dispositivos. Por favor, inténtalo de nuevo más tarde.");
         });
     }
   }, []);
 
   return (
     <section className="vh-100 vw-100 d-flex flex-column justify-content-center align-items-center">
-      {error.status ? (
-        <AlertDismissible error={error.msg} text={error.text} />
-      ) : (
-        ""
-      )}
-
+      <Toaster />
       <div className="  container m-auto w-100 h-100   d-flex justify-content-center align-items-center">
         <div className="col-sm-11 col-md-10 col-lg-6  col-xl-6   d-flex flex-column justify-content-center align-items-center">
           {showCamera && (
@@ -160,7 +146,6 @@ const Camera = () => {
                 playsInline
                 style={{ width: "100%" }}
               />
-
               <Button
                 variant="success"
                 className="mt-2"

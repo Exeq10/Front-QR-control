@@ -2,7 +2,7 @@ import {useContext} from "react";
 import {userContext} from "../context/UserProvider";
 import { Button } from "react-bootstrap";
 function UserProfile() {
-  const {name, tipo,avatarUser} = useContext(userContext);
+  const {name, tipo,avatarUser,user_id} = useContext(userContext);
 
   const validationType = (type) => {
     switch (type) {
@@ -45,6 +45,8 @@ function UserProfile() {
       <h3 className="fs-5 text-primary  "> {name}</h3>
     
     <h3 className="fs-3 ">  {validationType(tipo)}</h3>
+
+    <h4>{user_id} </h4>
       </div>
     </div>
   );
