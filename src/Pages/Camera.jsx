@@ -115,7 +115,7 @@ const Camera = () => {
           devices.forEach((device) => {
             if (
               device.kind === "videoinput" &&
-              device.label.toLowerCase().includes("front")
+              !device.label.toLowerCase().includes("front")
             ) {
               selectedDeviceId = device.deviceId;
             }
