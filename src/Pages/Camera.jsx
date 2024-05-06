@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import jsQR from "jsqr";
-import { Button, Spinner } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 
 import AlertDismissible from "../Components/AlertDismissible";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +15,7 @@ const Camera = () => {
 
   const videoRef = useRef(null);
   const [scanning, setScanning] = useState(false);
-  const [selectedCamera, setSelectedCamera] = useState(null); // Estado para almacenar la cámara seleccionada
+  const [selectedCamera, setSelectedCamera] = useState(null);
   const [showCamera, setShowCamera] = useState(true);
   const [loading, setLoading] = useState(false);
 
@@ -72,7 +72,7 @@ const Camera = () => {
     try {
       setLoading(true);
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { deviceId: deviceId ? { exact: deviceId } : undefined }, // Especifica el dispositivo de video seleccionado
+        video: { deviceId: deviceId ? { exact: deviceId } : undefined },
       });
       videoRef.current.srcObject = stream;
       setScanning(true);
@@ -111,19 +111,29 @@ const Camera = () => {
       navigator.mediaDevices
         .enumerateDevices()
         .then((devices) => {
-          const cameras = devices.filter(
-            (device) => device.kind === "videoinput"
-          );
-          // Si hay más de una cámara, permitir al usuario seleccionar una
-          if (cameras.length > 1) {
-            // Mostrar una lista de opciones para que el usuario elija
-            const cameraOptions = cameras.map((camera) => ({
-              label: camera.label || `Cámara ${camera.deviceId}`,
-              value: camera.deviceId,
-            }));
-            // Puedes mostrar esta lista de opciones al usuario y permitirle seleccionar una cámara
-            // Por simplicidad, aquí seleccionamos automáticamente la primera cámara encontrada
-            setSelectedCamera(cameraOptions[0].value);
+          let selectedDeviceId = null;
+          devices.forEach((device) => {
+            if (
+              device.kind === "videoinput" &&
+              device.label.toLowerCase().includes("front")
+            ) {
+              selectedDeviceId = device.deviceId;
+            }
+          });
+
+          if (!selectedDeviceId) {
+            const camera = devices.find(
+              (device) => device.kind === "videoinput"
+            );
+            if (camera) {
+              selectedDeviceId = camera.deviceId;
+            }
+          }
+
+          if (selectedDeviceId) {
+            setSelectedCamera(selectedDeviceId);
+          } else {
+            console.warn("No se encontraron cámaras disponibles.");
           }
         })
         .catch((error) => {
