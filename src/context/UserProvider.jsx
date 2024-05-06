@@ -7,16 +7,13 @@ function UserProvider({children}) {
   /* posibles messagees  */
 
   const [message, setMessage] = useState({status: false, msg: "", text: ""});
-const [avatarUser,setAvataruser]= useState('')
-const [user_id,setUser_id]= useState('')
+  const [avatarUser, setAvataruser] = useState("");
+  const [user_id, setUser_id] = useState("");
 
   const [name, setName] = useState("");
   const [documento, setDocumento] = useState("");
   const [qrData, setQrData] = useState(null);
   const [tipo, setTipo] = useState("");
-
-
-
 
   /* autorizacion de logeo  */
   const [auth, setAuth] = useState(false);
@@ -39,7 +36,7 @@ const [user_id,setUser_id]= useState('')
         setAvataruser,
         avatarUser,
         setUser_id,
-        user_id
+        user_id,
       }}>
       {children}
     </userContext.Provider>

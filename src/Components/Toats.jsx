@@ -1,9 +1,5 @@
-
-
 function Toats() {
-  return (
-    <div>Toats</div>
-  )
+  return <div>Toats</div>;
 }
 
-export default Toats
+export default Toats;

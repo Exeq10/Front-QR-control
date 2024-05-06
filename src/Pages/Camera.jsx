@@ -1,16 +1,16 @@
-import { useRef, useState, useEffect } from "react";
+import {useRef, useState, useEffect} from "react";
 import jsQR from "jsqr";
-import { Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
-import { userContext } from "../context/UserProvider";
-import toast, { Toaster } from 'react-hot-toast';
+import {Button} from "react-bootstrap";
+import {useNavigate} from "react-router-dom";
+import {useContext} from "react";
+import {userContext} from "../context/UserProvider";
+import toast, {Toaster} from "react-hot-toast";
 
 const Camera = () => {
   const notifyError = (error) => toast.error(error);
 
   const navigate = useNavigate();
-  const { setQrData, qrData, setMessage } = useContext(userContext);
+  const {setQrData, qrData, setMessage} = useContext(userContext);
 
   const videoRef = useRef(null);
   const [scanning, setScanning] = useState(false);
@@ -71,7 +71,7 @@ const Camera = () => {
     try {
       setLoading(true);
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { deviceId: deviceId ? { exact: deviceId } : undefined },
+        video: {deviceId: deviceId ? {exact: deviceId} : undefined},
       });
       videoRef.current.srcObject = stream;
       setScanning(true);
@@ -79,7 +79,9 @@ const Camera = () => {
       setQrData(null);
       setShowCamera(true);
     } catch (error) {
-      notifyError("Error al acceder a la cámara. Por favor habilite su cámara.");
+      notifyError(
+        "Error al acceder a la cámara. Por favor habilite su cámara.",
+      );
     }
   };
 
@@ -87,7 +89,9 @@ const Camera = () => {
     if (qrData === localStorage.getItem("key_secret")) {
       navigate("/profile");
     } else if (qrData !== null) {
-      notifyError("El QR escaneado no coincide con el usuario. Intente nuevamente.");
+      notifyError(
+        "El QR escaneado no coincide con el usuario. Intente nuevamente.",
+      );
     }
 
     setShowCamera(true);
@@ -114,7 +118,7 @@ const Camera = () => {
 
           if (!selectedDeviceId) {
             const camera = devices.find(
-              (device) => device.kind === "videoinput"
+              (device) => device.kind === "videoinput",
             );
             if (camera) {
               selectedDeviceId = camera.deviceId;
@@ -128,7 +132,9 @@ const Camera = () => {
           }
         })
         .catch((error) => {
-          notifyError("Error al enumerar dispositivos. Por favor, inténtalo de nuevo más tarde.");
+          notifyError(
+            "Error al enumerar dispositivos. Por favor, inténtalo de nuevo más tarde.",
+          );
         });
     }
   }, []);
@@ -144,13 +150,12 @@ const Camera = () => {
                 ref={videoRef}
                 autoPlay
                 playsInline
-                style={{ width: "100%" }}
+                style={{width: "100%"}}
               />
               <Button
                 variant="success"
                 className="mt-2"
-                onClick={() => startCamera(selectedCamera)}
-              >
+                onClick={() => startCamera(selectedCamera)}>
                 Escanear
               </Button>
             </>
