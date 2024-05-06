@@ -1,23 +1,23 @@
-import  {useRef, useState, useEffect} from "react";
+import { useRef, useState, useEffect } from "react";
 import jsQR from "jsqr";
-import {Button, Spinner} from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 
 import AlertDismissible from "../Components/AlertDismissible";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import {useContext} from "react";
-import {userContext} from "../context/UserProvider";
+import { useContext } from "react";
+import { userContext } from "../context/UserProvider";
 
 const Camera = () => {
   const navigate = useNavigate();
 
-  const {setQrData, qrData, setError, error} = useContext(userContext);
+  const { setQrData, qrData, setError, error } = useContext(userContext);
 
   const videoRef = useRef(null);
   const [scanning, setScanning] = useState(false);
-
-  const [showCamera, setShowCamera] = useState(true); // Nuevo estado para controlar si se muestra la cámara
-  const [loading, setLoading] = useState(false); // Nuevo estado para controlar el estado de carga
+  const [selectedCamera, setSelectedCamera] = useState(null); // Estado para almacenar la cámara seleccionada
+  const [showCamera, setShowCamera] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const scanQRCode = () => {
@@ -43,8 +43,8 @@ const Camera = () => {
           console.log("Código QR detectado:", code.data);
           setScanning(false);
           setQrData(code.data);
-          setShowCamera(false); // Ocultar la cámara después de escanear un código QR
-          setLoading(false); // Detener el estado de carga después de escanear un código QR
+          setShowCamera(false);
+          setLoading(false);
         }
       }
 
@@ -62,23 +62,31 @@ const Camera = () => {
     };
   }, [scanning]);
 
-  const startCamera = async () => {
+  useEffect(() => {
+    if (selectedCamera) {
+      startCamera(selectedCamera);
+    }
+  }, [selectedCamera]);
+
+  const startCamera = async (deviceId) => {
     try {
-      setLoading(true); // Iniciar el estado de carga cuando se inicia el escaneo
-      const stream = await navigator.mediaDevices.getUserMedia({video: true});
+      setLoading(true);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { deviceId: deviceId ? { exact: deviceId } : undefined }, // Especifica el dispositivo de video seleccionado
+      });
       videoRef.current.srcObject = stream;
       setScanning(true);
       setError(false);
       setQrData(null);
-      setShowCamera(true); // Mostrar la cámara cuando se inicia el escaneo
+      setShowCamera(true);
     } catch (error) {
       setError({
         status: true,
         msg: "Error al acceder a la cámara",
-        text: "Por favor habilite su camara ",
+        text: "Por favor habilite su cámara",
       });
     }
-  }; /* 'Error al acceder a la cámara: ', error */
+  };
 
   useEffect(() => {
     if (qrData === localStorage.getItem("key_secret")) {
@@ -87,7 +95,7 @@ const Camera = () => {
       setError({
         status: true,
         msg: "Intente nuevamente ",
-        text: "El QR scaneado no coincide con el usuario ",
+        text: "El QR escaneado no coincide con el usuario",
       });
     }
 
@@ -97,6 +105,32 @@ const Camera = () => {
       setError(false);
     }
   }, [qrData]);
+
+  useEffect(() => {
+    if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+      navigator.mediaDevices
+        .enumerateDevices()
+        .then((devices) => {
+          const cameras = devices.filter(
+            (device) => device.kind === "videoinput"
+          );
+          // Si hay más de una cámara, permitir al usuario seleccionar una
+          if (cameras.length > 1) {
+            // Mostrar una lista de opciones para que el usuario elija
+            const cameraOptions = cameras.map((camera) => ({
+              label: camera.label || `Cámara ${camera.deviceId}`,
+              value: camera.deviceId,
+            }));
+            // Puedes mostrar esta lista de opciones al usuario y permitirle seleccionar una cámara
+            // Por simplicidad, aquí seleccionamos automáticamente la primera cámara encontrada
+            setSelectedCamera(cameraOptions[0].value);
+          }
+        })
+        .catch((error) => {
+          console.error("Error al enumerar dispositivos:", error);
+        });
+    }
+  }, []);
 
   return (
     <section className="vh-100 vw-100 d-flex flex-column justify-content-center align-items-center">
@@ -114,10 +148,14 @@ const Camera = () => {
                 ref={videoRef}
                 autoPlay
                 playsInline
-                style={{width: "100%"}}
+                style={{ width: "100%" }}
               />
 
-              <Button variant="success" className="mt-2" onClick={startCamera}>
+              <Button
+                variant="success"
+                className="mt-2"
+                onClick={() => startCamera(selectedCamera)}
+              >
                 Escanear
               </Button>
             </>
