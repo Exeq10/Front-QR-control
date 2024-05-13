@@ -6,6 +6,8 @@ import {useContext} from "react";
 import {userContext} from "../context/UserProvider";
 import toast, {Toaster} from "react-hot-toast";
 
+import { IoQrCodeOutline } from "react-icons/io5";
+
 const Camera = () => {
   const notifyError = (error) => toast.error(error);
 
@@ -132,6 +134,7 @@ const Camera = () => {
           }
         })
         .catch((error) => {
+          console.log(error);
           notifyError(
             "Error al enumerar dispositivos. Por favor, inténtalo de nuevo más tarde.",
           );
@@ -156,7 +159,7 @@ const Camera = () => {
                 variant="success"
                 className="mt-2"
                 onClick={() => startCamera(selectedCamera)}>
-                Escanear
+                <IoQrCodeOutline fontSize={'45px'} />
               </Button>
             </>
           )}

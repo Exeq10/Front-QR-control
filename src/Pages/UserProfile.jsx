@@ -3,6 +3,7 @@ import { userContext } from "../context/UserProvider";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import { formatearFecha } from "../hooks/useFormatDate";
 
 function UserProfile() {
   const notifySuccess = (not) =>
@@ -38,7 +39,12 @@ function UserProfile() {
 
       if (response.ok) {
         if (responseData.marcaTiempo) {
-          notifySuccess(responseData.marcaTiempo);
+
+
+          const fecha = formatearFecha(responseData.marcaTiempo)
+
+
+          notifySuccess(fecha);
 
           setTimeout(() => {
             navigate("/login");

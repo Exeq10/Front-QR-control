@@ -1,26 +1,28 @@
 import {useContext, useState, useEffect} from "react";
-import "../assets/styles/styles.css";
+
 import {Form, Button} from "react-bootstrap";
 
-import {userContext} from "../context/UserProvider";
+
 import {Link, useNavigate} from "react-router-dom";
 import toast, {Toaster} from "react-hot-toast";
+import adminContext from "../../context/AdminProvider";
 
 const notifyError = (error) => toast.error(error);
 const notifySuccess = (error) => toast.success(error);
 
-function Login() {
+function LoginAdmin() {
   const {
-    name,
-    setName,
-    documento,
-    setDocumento,
-    message,
-    setMessage,
-    setAuth,
-    setAvataruser,
-    setUser_id,
-  } = useContext(userContext);
+    nameAdmin,
+        setnameAdmin,
+        authAdmin,
+        setAuthAdmin,
+        messageAdmin,
+        setMessageAdmin,
+        avatarAdmin,
+        setavatarAdmin,
+        documentoAdmin,
+        setDocumentoAdmin
+  } = useContext(adminContext);
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -29,8 +31,8 @@ function Login() {
     e.preventDefault();
 
     // Verifica si los campos están vacíos
-    if (!name || !documento) {
-      setMessage({
+    if (!nameAdmin || !documentoAdmin) {
+      setMessageAdmin({
         status: true,
         msg: "Complete los campos",
         text: "Por favor complete los campos para poder ingresar en la aplicación",
@@ -41,8 +43,8 @@ function Login() {
 
     // Datos a enviar en la petición POST
     const data = {
-      nombre: name,
-      documento: documento,
+      nombre: nameAdmin,
+      documento: documentoAdmin,
     };
 
     setIsLoading(true);
@@ -65,7 +67,7 @@ function Login() {
         const responseData = await response.json();
 
         if (responseData.message) {
-          setMessage({
+          setMessageAdmin({
             status: true,
             msg: "Verifique sus datos ",
             text: responseData.message,
@@ -78,14 +80,14 @@ function Login() {
             if (
               responseData.key_secret === localStorage.getItem("key_secret")
             ) {
-              setUser_id(responseData._id);
-              setAvataruser(responseData.pic_url);
-              setAuth(true);
+              
+              setavatarAdmin(responseData.pic_url);
+              setAuthAdmin(true);
 
 
               navigate("/");
             } else {
-              setMessage({
+              setMessageAdmin({
                 status: true,
                 msg: "Usuario incorrecto",
                 text: "El usuario no es el propietario de este dispositivo",
@@ -94,7 +96,7 @@ function Login() {
           } else {
             localStorage.setItem("key_secret", responseData.key_secret);
 
-            setMessage({
+            setMessageAdmin({
               status: true,
               msg: "Usuario confirmado",
               text: "El usuario se confirmó correctamente",
@@ -106,7 +108,7 @@ function Login() {
       }
     } catch (error) {
       console.error("Error:", error.message);
-      setMessage({
+      setMessageAdmin({
         status: true,
         msg: "Error",
         text: "Ocurrió un error al iniciar sesión. Por favor, inténtalo de nuevo más tarde.",
@@ -117,41 +119,41 @@ function Login() {
   };
 
   useEffect(() => {
-    if (message.status) {
-      if (message.msg === "Complete los campos") {
-        notifyError(message.text);
-      } else if (message.msg === "Verifique sus datos ") {
-        notifyError(message.text);
-      } else if (message.msg === "Usuario incorrecto") {
-        notifyError(message.text);
-      } else if (message.msg === "Usuario confirmado") {
-        notifySuccess(message.text);
-      } else if (message.msg === "Error") {
-        notifyError(message.text);
+    if (messageAdmin.status) {
+      if (messageAdmin.msg === "Complete los campos") {
+        notifyError(messageAdmin.text);
+      } else if (messageAdmin.msg === "Verifique sus datos ") {
+        notifyError(messageAdmin.text);
+      } else if (messageAdmin.msg === "Usuario incorrecto") {
+        notifyError(messageAdmin.text);
+      } else if (messageAdmin.msg === "Usuario confirmado") {
+        notifySuccess(messageAdmin.text);
+      } else if (messageAdmin.msg === "Error") {
+        notifyError(messageAdmin.text);
       }
     }
-  }, [message]);
+  }, [messageAdmin]);
 
   return (
     <div className=" bg-white  shadow-lg  p-2   container d-flex flex-column justify-content-center align-items-center  col-lg-2 col-sm-12 col-xl-3 col-md-3 w-100 m-auto vh-100">
       <Toaster />
 
       <div className="container-sm col-sm-12 col-md-10 col-lg-6 col-xl-6 d-flex justify-content-center align-items-center m-auto">
-        <img src="./logo.webp" alt="logo" className="d-block col-6" />
+        <img src="./logoadmin.png" alt="logo" className="d-block col-6" />
       </div>
 
       <div className="container col-lg-4 col-sm-12 col-xl-6">
-        <h1 className="fs-2  mb-3">Usuario</h1>
+        <h1 className="fs-2  mb-3">Administrador</h1>
         <Form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
           <Form.Group controlId="formBasicEmail">
             <Form.Label>Nombre</Form.Label>
             <Form.Control
               type="text"
               placeholder="Ingresa tu nombre"
-              value={name}
+              value={nameAdmin}
               onChange={(e) => {
-                setName(e.target.value);
-                setMessage({status: false, msg: "", text: ""});
+                setnameAdmin(e.target.value);
+                setMessageAdmin({status: false, msg: "", text: ""});
               }}
             />
           </Form.Group>
@@ -160,15 +162,15 @@ function Login() {
             <Form.Control
               type="text"
               placeholder="documento"
-              value={documento}
+              value={documentoAdmin}
               onChange={(e) => {
-                setDocumento(e.target.value);
-                setMessage({status: false, msg: "", text: ""});
+                setDocumentoAdmin(e.target.value);
+                setMessageAdmin({status: false, msg: "", text: ""});
               }}
             />
           </Form.Group>
           <Button
-            variant="primary"
+            variant="success"
             type="submit"
             className={`${isLoading ? "mt-4 m-auto col-lg-6 col-sm-12 col-xl-6 col-md-6 parpadeo" : "mt-4 m-auto col-lg-6 col-sm-12 col-xl-6 col-md-6"} `}
             disabled={isLoading}>
@@ -177,9 +179,9 @@ function Login() {
         </Form>
       </div>
 
-      <Link to={'/loginAdmin'}  className="text-decoration-none  mt-4 "   >  Administrador  </Link>
+      <Link to={'/login'}  className="text-decoration-none  mt-4 "   >  Usuario  </Link>
     </div>
   );
 }
 
-export default Login;
+export default LoginAdmin;
