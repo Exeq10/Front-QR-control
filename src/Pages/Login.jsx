@@ -5,6 +5,7 @@ import {Form, Button} from "react-bootstrap";
 import {userContext} from "../context/UserProvider";
 import {Link, useNavigate} from "react-router-dom";
 import toast, {Toaster} from "react-hot-toast";
+import { connectcontext } from "../context/ConnectProvider";
 
 const notifyError = (error) => toast.error(error);
 const notifySuccess = (error) => toast.success(error);
@@ -21,6 +22,9 @@ function Login() {
     setAvataruser,
     setUser_id,
   } = useContext(userContext);
+
+
+  const {URL}= useContext(connectcontext)
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -56,7 +60,7 @@ function Login() {
       body: JSON.stringify(data),
     };
 
-    const url = `https://backend-qr-control.onrender.com/api/login`;
+    const url = `${URL}/login`;
 
     try {
       const response = await fetch(url, requestOptions);

@@ -4,6 +4,7 @@ import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { formatearFecha } from "../hooks/useFormatDate";
+import { connectcontext } from "../context/ConnectProvider";
 
 function UserProfile() {
   const notifySuccess = (not) =>
@@ -14,6 +15,8 @@ function UserProfile() {
   const { name, tipo, avatarUser, user_id, setMessage, message } = useContext(
     userContext
   );
+
+  const {URL} = useContext(connectcontext)
 
   const createRegister = async (register) => {
     const data = {
@@ -31,7 +34,7 @@ function UserProfile() {
 
     try {
       const response = await fetch(
-        "https://backend-qr-control.onrender.com/api/marcar-registro",
+        `${URL}/marcar-registro`,
         requestOptions
       );
 

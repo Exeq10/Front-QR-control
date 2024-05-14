@@ -6,6 +6,7 @@ import {Form, Button} from "react-bootstrap";
 import {Link, useNavigate} from "react-router-dom";
 import toast, {Toaster} from "react-hot-toast";
 import adminContext from "../../context/AdminProvider";
+import { connectcontext } from "../../context/ConnectProvider";
 
 const notifyError = (error) => toast.error(error);
 const notifySuccess = (error) => toast.success(error);
@@ -23,6 +24,10 @@ function LoginAdmin() {
         documentoAdmin,
         setDocumentoAdmin
   } = useContext(adminContext);
+
+
+const {URL}= useContext(connectcontext)
+
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -58,7 +63,7 @@ function LoginAdmin() {
       body: JSON.stringify(data),
     };
 
-    const url = `https://backend-qr-control.onrender.com/api/login`;
+    const url = `${URL}/loginAdmin`;
 
     try {
       const response = await fetch(url, requestOptions);
@@ -75,34 +80,16 @@ function LoginAdmin() {
           return;
         }
 
-        if (responseData.key_secret) {
-          if (localStorage.getItem("key_secret")) {
-            if (
-              responseData.key_secret === localStorage.getItem("key_secret")
-            ) {
-              
-              setavatarAdmin(responseData.pic_url);
-              setAuthAdmin(true);
+      if(responseData.nombre) {
 
-
-              navigate("/");
-            } else {
-              setMessageAdmin({
-                status: true,
-                msg: "Usuario incorrecto",
-                text: "El usuario no es el propietario de este dispositivo",
-              });
-            }
-          } else {
-            localStorage.setItem("key_secret", responseData.key_secret);
-
-            setMessageAdmin({
-              status: true,
-              msg: "Usuario confirmado",
-              text: "El usuario se confirmó correctamente",
-            });
-          }
-        }
+        setnameAdmin(responseData.nombre)
+        setavatarAdmin(responseData.pic_url)
+        setAuthAdmin(true)
+        navigate('/dashboard')
+        
+      }
+          
+        
       } else {
         throw new Error("Error al iniciar sesión");
       }
